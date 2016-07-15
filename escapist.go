@@ -74,7 +74,7 @@ func escape(in []byte, basic bool) (out []byte) {
 	}
 
 	// Seek for the next character to escape, iterate until no character is found
-	for nc = gfn(in); nc > -1; nc = gfn(in[nc+1:]) {
+	for nc = gfn(in); nc > -1; nc = gfn(in[lm:]) {
 		if !changed {
 			// Think of a good way to guess final size to avoid unnecessary allocations
 			// Right now the outbound slice is created to be 30% larger than the inbound slice
@@ -84,6 +84,7 @@ func escape(in []byte, basic bool) (out []byte) {
 
 		// Catch up our 'out' slice to have all the data from the last marker position UP TO (not including) our new escape character
 		out = append(out, in[lm:lm+nc]...)
+
 		// Append the bytes for the escaped version of our character
 		out = afn(out, in[nc+lm])
 
