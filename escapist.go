@@ -107,7 +107,10 @@ func escape(in []byte, basic bool) (out []byte) {
 	if !changed {
 		// Nothing has changed, set out to in
 		out = in
+	} else if lm < cap {
+		out = append(out, in[lm:]...)
 	}
+
 	return
 }
 
