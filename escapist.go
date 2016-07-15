@@ -43,17 +43,24 @@ const (
 type getNextFunc func([]byte) int
 type appendFunc func([]byte, byte) []byte
 
-// Escape likes to escape
+// Escape will perform a basic escape an inbound byteslice
+// If a change occurs the returned slice will be new rather than mutating the original
+// Else, byteslices which do not contain escapable characters will return directly with no allocations
+// Note: A basic escape looks for ', ", <, >, and &
 func Escape(in []byte) (out []byte) {
 	return escape(in, true)
 }
 
-// EscapeAdv likes to escape very thoroguhly
+// EscapeAdv will perform an advanced escape an inbound byteslice
+// If a change occurs the returned slice will be new rather than mutating the original
+// Else, byteslices which do not contain escapable characters will return directly with no allocations
+// Note: An advanced escape looks for ', ", <, >, &, `, !, @, $, %, (, ), =, +, \{, \}, \[, and \]
 func EscapeAdv(in []byte) (out []byte) {
 	return escape(in, false)
 }
 
-// Escape likes to escape
+// escape is the primary func for this library.
+// Takes an inbound byteslice and a basic boolean, basic determines if basic or advanced escaping will be used
 func escape(in []byte, basic bool) (out []byte) {
 	var (
 		changed bool      // Changed boolean, if remains false - no replacements were made
@@ -66,9 +73,11 @@ func escape(in []byte, basic bool) (out []byte) {
 	)
 
 	if basic {
+		// Escaping type is basic, use basic set of funcs
 		gfn = getNextEscChar
 		afn = appendEscapedBytes
 	} else {
+		// Escaping type is advanced, use advanced set of funcs
 		gfn = getNextAdvEscChar
 		afn = appendAdvEscapedBytes
 	}
@@ -102,6 +111,8 @@ func escape(in []byte, basic bool) (out []byte) {
 	return
 }
 
+// getNextEscChar will return the index of the next escape character within an inbound slice
+// Note: This matches for basic escaping
 func getNextEscChar(in []byte) (i int) {
 	var b byte
 	for i, b = range in {
@@ -114,6 +125,8 @@ func getNextEscChar(in []byte) (i int) {
 	return -1
 }
 
+// appendEscapedBytes will append bytes representing the escaped character
+// Note: This appends for basic escaping
 func appendEscapedBytes(in []byte, b byte) []byte {
 	switch b {
 	case charSingleQuote:
@@ -128,10 +141,12 @@ func appendEscapedBytes(in []byte, b byte) []byte {
 		return append(in, codeGreaterThan...)
 
 	default:
-		panic("Run Forrest, run! Something bad happened, we received '" + string(b) + "'")
+		panic("We received an unexpected character: '" + string(b) + "'")
 	}
 }
 
+// getNextAdvEscChar will return the index of the next escape character within an inbound slice
+// Note: This matches for advanced escaping
 func getNextAdvEscChar(in []byte) (i int) {
 	var b byte
 	for i, b = range in {
@@ -147,6 +162,8 @@ func getNextAdvEscChar(in []byte) (i int) {
 	return -1
 }
 
+// appendAdvEscapedBytes will append bytes representing the escaped character
+// Note: This appends for advanced escaping
 func appendAdvEscapedBytes(in []byte, b byte) []byte {
 	switch b {
 	case charSingleQuote:
@@ -186,6 +203,6 @@ func appendAdvEscapedBytes(in []byte, b byte) []byte {
 	case charRBracket:
 		return append(in, codeRBracket...)
 	default:
-		panic("Run Forrest, run! Something bad happened, we received '" + string(b) + "'")
+		panic("We received an unexpected character: '" + string(b) + "'")
 	}
 }
