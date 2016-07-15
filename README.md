@@ -13,8 +13,12 @@ BenchmarkNoRep-4        30000000                58.3 ns/op             0 B/op   
 BenchmarkHTMLNoRep-4    20000000                64.1 ns/op             0 B/op          0 allocs/op
 BenchmarkAdvNoRep-4     20000000               100 ns/op               0 B/op          0 allocs/op
 
-# Note: escapist.Escape and html.EscapeString look at ', ", <, >, and & and is considered a very basic escape.
-# escapist.EscapeAdv looks at &, <, >, ", ', `, !, @, $, %, (, ), =, +, \{, \}, \[, and \]*
+# Note: escapist.Escape and html.EscapeString look at:
+# ', ", <, >, and &
+# This is considered to be a very basic escape.
+
+# In contrast, escapist.EscapeAdv looks at:
+# &, <, >, ", ', `, !, @, $, %, (, ), =, +, \{, \}, \[, and \]*
 ```
 
 ## Usage
