@@ -1,7 +1,6 @@
 package escapist
 
 import (
-	"fmt"
 	"html"
 	"testing"
 )
@@ -539,18 +538,15 @@ BenchmarkAdvNoRep-4     20000000               100 ns/op               0 B/op   
 )
 
 func TestBasic(t *testing.T) {
-	b := Escape(exampleBasic)
-	fmt.Println(string(b))
+	outB = Escape(exampleBasic)
 }
 
 func TestBasicComplex(t *testing.T) {
-	b := Escape(exampleHTMLPage)
-	fmt.Println(string(b))
+	outB = Escape(exampleHTMLPage)
 }
 
 func TestBasicNoRep(t *testing.T) {
-	b := Escape(exampleBasicNoRep)
-	fmt.Println(string(b))
+	outB = Escape(exampleBasicNoRep)
 }
 
 func BenchmarkBasic(b *testing.B) {
